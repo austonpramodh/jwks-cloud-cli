@@ -1,7 +1,7 @@
 import CreateCommand from "../commands/create";
 import cli from "cli-ux";
 import * as path from "path";
-import { deleteIfExists, storeKeys } from "../utils/storage";
+import { deleteIfExists, storeData } from "../utils/storage";
 import { CloudHelper } from "../cloudHelpers/cloud-helper.interface";
 
 export default abstract class CreateJWKSCloud extends CreateCommand {
@@ -47,11 +47,14 @@ export default abstract class CreateJWKSCloud extends CreateCommand {
             await deleteIfExists(storageFolder, publicJWKSFileName);
             this.log("JWKS Files not found on cloud");
         } else {
-            await storeKeys({
-                privateJWKS: rawPrivateJWKSfile,
-                publicJWKS: rawPublicJWKSfile,
-                privateJWKSFileName,
-                publicJWKSFileName,
+            await storeData({
+                data: rawPrivateJWKSfile,
+                fileName: privateJWKSFileName,
+                folderpath: storageFolder,
+            });
+            await storeData({
+                data: rawPublicJWKSfile,
+                fileName: publicJWKSFileName,
                 folderpath: storageFolder,
             });
             // write the files to storage

@@ -2,7 +2,7 @@ import { Command, flags } from "@oclif/command";
 import { JWK } from "node-jose";
 import * as path from "path";
 import cli from "cli-ux";
-import { exists, storeKeys } from "../utils/storage";
+import { exists, storeData } from "../utils/storage";
 
 export default class Create extends Command {
     static description = "Creates a new JWKS";
@@ -76,13 +76,16 @@ hello world from ./src/hello.ts!
         const privateJWKS = jwks.toJSON(true);
 
         cli.action.start("Storing JWKS locally...");
+        await storeData({
+            data: JSON.stringify(privateJWKS),
+            fileName: privateJWKSFileName,
+            folderpath: folderpath,
+        });
 
-        await storeKeys({
-            folderpath,
-            privateJWKSFileName,
-            publicJWKSFileName,
-            privateJWKS: JSON.stringify(privateJWKS),
-            publicJWKS: JSON.stringify(publicJWKS),
+        await storeData({
+            data: JSON.stringify(publicJWKS),
+            fileName: publicJWKSFileName,
+            folderpath: folderpath,
         });
 
         cli.action.stop("done");

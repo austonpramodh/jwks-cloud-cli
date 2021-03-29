@@ -28,17 +28,10 @@ export async function exists(path: string) {
     }
 }
 
-export async function storeKeys(options: {
-    privateJWKS: string;
-    publicJWKS: string;
-    folderpath: string;
-    publicJWKSFileName: string;
-    privateJWKSFileName: string;
-}) {
-    const { privateJWKS, publicJWKS, folderpath, privateJWKSFileName, publicJWKSFileName } = options;
+export async function storeData(options: { data: string; folderpath: string; fileName: string }) {
+    const { data, folderpath, fileName } = options;
     await ensureFolder(folderpath);
-    await fsPromises.writeFile(path.join(folderpath, publicJWKSFileName), publicJWKS, "UTF-8");
-    await fsPromises.writeFile(path.join(folderpath, privateJWKSFileName), privateJWKS, "UTF-8");
+    await fsPromises.writeFile(path.join(folderpath, fileName), data, "UTF-8");
 }
 
 export async function deleteIfExists(folderPath: string, fileName: string) {
