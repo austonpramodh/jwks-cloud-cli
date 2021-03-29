@@ -1,0 +1,64 @@
+{
+  "name": "jwks-cloud-cli",
+  "description": "JWKS handler on cloud storage",
+  "version": "0.0.0",
+  "author": "Auston Pramodh Barboza @austonpramodh",
+  "bin": {
+    "jwks-cloud-cli": "./bin/run"
+  },
+  "bugs": "https://github.com/austonpramodh/jwks-cloud-cli/issues",
+  "dependencies": {
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.2",
+    "aws-sdk": "^2.874.0",
+    "node-jose": "^2.0.0",
+    "tslib": "^1.14.1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.26.0",
+    "@types/node": "^10.17.56",
+    "@types/node-jose": "^1.1.5",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.1.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "globby": "^10.0.2",
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.9"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/austonpramodh/jwks-cloud-cli",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "jwks-cloud-cli",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "austonpramodh/jwks-cloud-cli",
+  "scripts": {
+    "postpack": "rimraf oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}
