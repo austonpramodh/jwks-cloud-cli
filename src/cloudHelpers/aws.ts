@@ -11,10 +11,10 @@ interface AWSUploadHelperOptions {
 
 export class AWSUploadHelper implements CloudHelper {
     static flags = {
-        S3_ACCESS_KEY_ID: flags.string({ required: true, char: "i" }),
-        S3_ACCESS_KEY_SECRET: flags.string({ required: true, char: "k" }),
-        S3_ENDPOINT: flags.string({ required: false, char: "e" }),
-        S3_BUCKET: flags.string({ required: true, char: "b" }),
+        S3_ACCESS_KEY_ID: flags.string({ required: true, char: "i", env: "S3_ACCESS_KEY_ID" }),
+        S3_ACCESS_KEY_SECRET: flags.string({ required: true, char: "k", env: "S3_ACCESS_KEY_SECRET" }),
+        S3_ENDPOINT: flags.string({ required: false, char: "e", env: "S3_ENDPOINT" }),
+        S3_BUCKET: flags.string({ required: true, char: "b", env: "S3_ENDPOINT" }),
     };
 
     private s3: S3;

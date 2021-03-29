@@ -25,13 +25,14 @@ hello world from ./src/hello.ts!
         fileName: flags.string({
             description: "File Name",
             default: "jwks",
+            env: "JWKS_FILE_NAME",
         }),
         folder: flags.string({
             default: "",
             required: false,
-            name: "Upload Path for cloud storage",
+            name: "Upload folder for cloud storage",
             multiple: false,
-            env: "UPLOAD_PATH",
+            env: "JWKS_UPLOAD_FOLDER",
         }),
     };
 
