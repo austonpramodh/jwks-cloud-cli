@@ -28,9 +28,15 @@ export default abstract class CreateJWKSCloud extends CreateCommand {
         const privateJWKSFileName = `${options.fileName}-private.json`;
         const publicJWKSFileName = `${options.fileName}.json`;
 
+        const publicKeyPEMFileName = `${options.fileName}.key.pub`;
+        const privateKeyPEMFileName = `${options.fileName}.key`;
+
         // Upload Keys for files
-        const privateJWKSkey = `${options.folder.replace(/\/$/, "")}${options.folder ? "/" : ""}${privateJWKSFileName}`;
-        const publicJWKSkey = `${options.folder.replace(/\/$/, "")}${options.folder ? "/" : ""}${publicJWKSFileName}`;
+        const keyFolder = `${options.folder.replace(/\/$/, "")}${options.folder ? "/" : ""}`;
+        const publicJWKSkey = keyFolder + publicJWKSFileName;
+        const privateJWKSkey = keyFolder + privateJWKSFileName;
+        const publicKeyPEMkey = keyFolder + publicKeyPEMFileName;
+        const privateKeyPEMkey = keyFolder + privateKeyPEMFileName;
 
         // FileStorage Folder
         const storageFolder = path.join(this.config.dataDir, "keys", options.folder);
@@ -64,7 +70,10 @@ export default abstract class CreateJWKSCloud extends CreateCommand {
         // Create JWKS Keys
         const jwks = await this.createJWKS(options);
         // Upload the jwks to the aws cloud
-        await this.uploadfile(privateJWKSkey, JSON.stringify(jwks.privateJWKS), "PrivateJWKS");
         await this.uploadfile(publicJWKSkey, JSON.stringify(jwks.publicJWKS), "PublicJWKS");
+        await this.uploadfile(privateJWKSkey, JSON.stringify(jwks.privateJWKS), "PrivateJWKS");
+        // Upload PEM
+        await this.uploadfile(publicKeyPEMkey, jwks.publicKeyPEM, "Public Key PEM");
+        await this.uploadfile(privateKeyPEMkey, jwks.privateKeyPEM, "Private Key PEM");
     }
 }

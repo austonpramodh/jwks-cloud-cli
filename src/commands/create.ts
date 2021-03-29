@@ -88,9 +88,28 @@ hello world from ./src/hello.ts!
             folderpath: folderpath,
         });
 
+        // Store in PEM Format
+        const publicKeyPEM = jwk.toPEM();
+        const privateKeyPEM = jwk.toPEM(true);
+
+        const publicKeyPEMFileName = `${options.fileName}.key.pub`;
+        const privateKeyPEMFileName = `${options.fileName}.key`;
+
+        await storeData({
+            data: publicKeyPEM,
+            fileName: publicKeyPEMFileName,
+            folderpath: folderpath,
+        });
+
+        await storeData({
+            data: privateKeyPEM,
+            fileName: privateKeyPEMFileName,
+            folderpath: folderpath,
+        });
+
         cli.action.stop("done");
 
-        return { publicJWKS, privateJWKS };
+        return { publicJWKS, privateJWKS, publicKeyPEM, privateKeyPEM };
     }
 
     async run() {
