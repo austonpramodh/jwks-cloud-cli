@@ -34,6 +34,13 @@ export async function storeData(options: { data: string; folderpath: string; fil
     await fsPromises.writeFile(path.join(folderpath, fileName), data, "UTF-8");
 }
 
+export async function getData(options: { folderpath: string; fileName: string }) {
+    const { folderpath, fileName } = options;
+    await ensureFolder(folderpath);
+    const data = await fsPromises.readFile(path.join(folderpath, fileName), "UTF-8");
+    return data;
+}
+
 export async function deleteIfExists(folderPath: string, fileName: string) {
     const filePath = path.join(folderPath, fileName);
 

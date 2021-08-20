@@ -52,13 +52,14 @@ export class AWSUploadHelper implements CloudHelper {
         }
     }
 
-    async uploadFile(key: string, data: string) {
+    async uploadFile(key: string, data: string, isPublic?: boolean) {
         await this.s3
             .putObject({
                 Bucket: this.bucket,
                 Body: data,
                 Key: key,
                 ContentType: "application/json",
+                ACL: isPublic ? "public-read" : undefined,
             })
             .promise();
     }

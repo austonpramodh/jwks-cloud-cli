@@ -2,9 +2,9 @@ import { Command, flags } from "@oclif/command";
 import { JWK } from "node-jose";
 import * as path from "path";
 import cli from "cli-ux";
-import { exists, storeData } from "../utils/storage";
+import { exists, getData, storeData } from "../utils/storage";
 
-export default class Create extends Command {
+export default class Rotate extends Command {
     static description = "Creates a new JWKS";
 
     static examples = [
@@ -22,11 +22,11 @@ hello world from ./src/hello.ts!
             default: false,
             type: "boolean",
         }),
-        // fileName: flags.string({
-        //     description: "File Name",
-        //     default: "jwks",
-        //     env: "JWKS_FILE_NAME",
-        // }),
+        fileName: flags.string({
+            description: "File Name",
+            default: "jwks",
+            env: "JWKS_FILE_NAME",
+        }),
         folder: flags.string({
             default: "",
             required: false,
@@ -40,31 +40,47 @@ hello world from ./src/hello.ts!
 
     isAbstractMode = false;
 
-    async createJWKS(options: { force: boolean; folder: string }) {
-        if (!this.isAbstractMode) cli.action.start("Checking if JWKS is already generated...");
+    async rotateJWKS(options: {
+        force: boolean;
+        // fileName: string;
+        folder: string;
+    }) {
+        /**
+         * check if keys exists
+         * if not, stop
+         * create new jwk
+         * add it to jwk
+         * generate pub jwks
+         * remove unwanted jwk from jwks
+         * generate priv JWKS
+         * generate pub PEM
+         * generate Priv PEM
+         */
+        if (!this.isAbstractMode) cli.action.start("Checking if JWKS exists...");
 
         const folderpath = path.join(this.config.dataDir, "keys", options.folder);
+        // const publicJWKSFileName = options.fileName + ".json";
+        // const privateKeyPEMFileName = `${options.fileName}.key`;
         const publicJWKSFileName = "jwks.json";
         const privateKeyPEMFileName = `jwtRS256.key`;
 
         // Check if file exists
-        // only public jwks is c for the process
         const alreadyFileExists = await exists(path.join(folderpath, publicJWKSFileName));
 
-        if (!this.isAbstractMode) cli.action.stop(alreadyFileExists ? "JWKS Exists" : "JWKS doesn't exist");
-
-        const confirmOverride =
-            options.force ||
-            (alreadyFileExists && (await cli.confirm("Continue to overwrite existing JWKS? (yes/no)")));
-
-        if (alreadyFileExists && !confirmOverride) {
-            this.log("Exiting...");
-            this.exit(0);
+        if (!alreadyFileExists) {
+            if (!this.isAbstractMode) cli.action.stop("JWKS doesnt exist, Please create one.");
+            this.exit();
         }
 
-        cli.action.start("creating JWKS...");
+        if (!this.isAbstractMode) cli.action.stop("JWKS Exists");
 
-        const jwks = JWK.createKeyStore();
+        const rawJWKS = await getData({ folderpath, fileName: publicJWKSFileName });
+
+        const jwks = await JWK.asKeyStore(rawJWKS);
+
+        cli.action.start("creating a new JWK...");
+
+        // const jwks = JWK.();
         // Generate a JWKS add
         const jwk = await jwks.generate("RSA", 128);
         // add in first key
@@ -81,6 +97,9 @@ hello world from ./src/hello.ts!
             folderpath: folderpath,
         });
 
+        cli.action.stop("done");
+
+        cli.action.start("Storing Private PEM Key locally...");
         // Store private key in PEM Format
         const privateKeyPEM = jwk.toPEM(true);
 
@@ -96,9 +115,9 @@ hello world from ./src/hello.ts!
     }
 
     async run() {
-        const { flags } = this.parse(Create);
+        const { flags } = this.parse(Rotate);
 
-        await this.createJWKS(flags);
+        await this.rotateJWKS(flags);
 
         this.exit(0);
     }

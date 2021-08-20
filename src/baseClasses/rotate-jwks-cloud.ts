@@ -1,10 +1,10 @@
-import CreateCommand from "../commands/create";
 import cli from "cli-ux";
 import * as path from "path";
-import { deleteIfExists, storeData } from "../utils/storage";
+import { storeData } from "../utils/storage";
 import { CloudHelper } from "../cloudHelpers/cloud-helper.interface";
+import Rotate from "../commands/rotate";
 
-export default abstract class CreateJWKSCloud extends CreateCommand {
+export default abstract class RotateJWKSCloud extends Rotate {
     cloudStorage: CloudHelper | null = null;
 
     async uploadfile(key: string, data: string, fileName: string, isPublicFile: boolean) {
@@ -21,7 +21,7 @@ export default abstract class CreateJWKSCloud extends CreateCommand {
         this.isAbstractMode = true;
     }
 
-    async createJWKSAndUpload(options: {
+    async rotateJWKSAndUpload(options: {
         // fileName: string;
         folder: string;
         force: boolean;
@@ -55,18 +55,18 @@ export default abstract class CreateJWKSCloud extends CreateCommand {
                 folderpath: storageFolder,
             });
             // write the files to storage
-            this.log("JWKS already present on cloud... Downloaded...");
+            this.log("JWKS present on cloud... Downloaded...");
         } else {
             // Remove already present JWKS from local if they exist
-            await deleteIfExists(storageFolder, publicJWKSFileName);
-            this.log("JWKS Files not found on cloud");
+            this.log("JWKS File not found on cloud, Please create");
+            this.exit();
         }
 
         // Create JWKS Keys
-        const jwks = await this.createJWKS(options);
+        const { privateKeyPEM, publicJWKS } = await this.rotateJWKS(options);
         // Upload the public jwks to the cloud
-        await this.uploadfile(publicJWKSkey, JSON.stringify(jwks.publicJWKS), "PublicJWKS", true);
+        await this.uploadfile(publicJWKSkey, JSON.stringify(publicJWKS), "PublicJWKS", true);
         // Upload private PEM
-        await this.uploadfile(privateKeyPEMkey, jwks.privateKeyPEM, "Private Key PEM", false);
+        await this.uploadfile(privateKeyPEMkey, privateKeyPEM, "Private Key PEM", false);
     }
 }
