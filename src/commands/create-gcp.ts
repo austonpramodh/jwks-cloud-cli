@@ -1,9 +1,9 @@
 import CreateCommand from "./create";
-import { AWSUploadHelper } from "../cloudHelpers/AWS";
+import { GCPUploadHelper } from "../cloudHelpers/gcp";
 import CreateJWKSCloud from "../baseClasses/create-jwks-cloud";
 
 export default class CreateAWS extends CreateJWKSCloud {
-    static description = "Creates a new JWKS on S3";
+    static description = "Creates a new JWKS on GCP";
 
     static examples = [
         `$ jwks-cloud-cli create
@@ -13,7 +13,7 @@ hello world from ./src/hello.ts!
 
     static flags = {
         ...CreateCommand.flags,
-        ...AWSUploadHelper.flags,
+        ...GCPUploadHelper.flags,
     };
 
     static args = [{ name: "file" }];
@@ -22,11 +22,9 @@ hello world from ./src/hello.ts!
         const { flags } = this.parse(CreateAWS);
 
         // Initialize the cloudstorage
-        this.cloudStorage = new AWSUploadHelper({
-            accessKeyId: flags.S3_ACCESS_KEY_ID,
-            secretAccessKey: flags.S3_ACCESS_KEY_SECRET,
-            endpoint: flags.S3_ENDPOINT,
-            bucket: flags.S3_BUCKET,
+        this.cloudStorage = new GCPUploadHelper({
+            keyFilename: flags.KEY_FILENAME,
+            bucket: flags.BUCKET,
         });
 
         await this.createJWKSAndUpload(flags);

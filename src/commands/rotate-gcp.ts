@@ -1,7 +1,7 @@
-import { AWSUploadHelper } from "../cloudHelpers/AWS";
+import { GCPUploadHelper } from "../cloudHelpers/gcp";
 import RotateJWKSCloud from "../baseClasses/rotate-jwks-cloud";
 
-export default class RotateAWS extends RotateJWKSCloud {
+export default class RotateGCP extends RotateJWKSCloud {
     static description = "Creates a new JWKS on S3";
 
     static examples = [
@@ -12,20 +12,18 @@ hello world from ./src/hello.ts!
 
     static flags = {
         ...RotateJWKSCloud.flags,
-        ...AWSUploadHelper.flags,
+        ...GCPUploadHelper.flags,
     };
 
     static args = [{ name: "file" }];
 
     async run() {
-        const { flags } = this.parse(RotateAWS);
+        const { flags } = this.parse(RotateGCP);
 
         // Initialize the cloudstorage
-        this.cloudStorage = new AWSUploadHelper({
-            accessKeyId: flags.S3_ACCESS_KEY_ID,
-            secretAccessKey: flags.S3_ACCESS_KEY_SECRET,
-            endpoint: flags.S3_ENDPOINT,
-            bucket: flags.S3_BUCKET,
+        this.cloudStorage = new GCPUploadHelper({
+            bucket: flags.BUCKET,
+            keyFilename: flags.KEY_FILENAME,
         });
 
         await this.rotateJWKSAndUpload(flags);
